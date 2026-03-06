@@ -1,10 +1,17 @@
 import type { Document } from "mongoose";
 
+export enum UserRole {
+    ADMIN = "admin",
+    USER = "user",
+}
+
 
 export interface IUser {
     name: string;
     email: string;
-    password?: string
+    password?: string;
+    role: UserRole;
+    isVerified:boolean;
 }
 
 export interface IUserDocument extends IUser, Document {

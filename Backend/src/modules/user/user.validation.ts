@@ -50,5 +50,30 @@ export const updateUserSchema = z.object({
     }).strict(),
 });
 
+export const resendVerificationSchema = z.object({
+    body: z.object({
+        email: z
+            .string()
+            .min(1, "Email is required")
+            .email("Invalid email format")
+            .trim()
+            .toLowerCase(),
+    }).strict(),
+    params: z.object({}).passthrough(),
+    query: z.object({}).passthrough(),
+});
+
+export const verifyEmailSchema = z.object({
+    body: z.object({}).passthrough().optional(), 
+    query: z.object({
+        token: z.string().min(1, "Token is required"),
+        email: z.string().min(1, "Email is required").email("Invalid email"),
+    }),
+    params: z.object({}).passthrough(),
+});
+
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
+export type ResendVerificationInput = z.infer<typeof resendVerificationSchema>;
+export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;
+

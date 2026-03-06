@@ -4,18 +4,12 @@ import userRouter from "./modules/user/user.routes.js"
 import { env } from "./config/env.js";
 import cors from "cors"
 import cookieParser from "cookie-parser";
-
-
-
-
-
+import { sanitize } from "express-mongo-sanitize";
 
 const app = express();
 
-
-
 const allowedOrigins = [
-    env.CORS_ORIGIN_1
+    env.FRONTEND_URL
 ];
 
 const corsOptions: cors.CorsOptions = {
@@ -40,8 +34,10 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-
+app.use((req, _res, next) => {
+    req.body = sanitize(req.body);
+    next();
+});
 
 app.get("/", (req, res) => {
     res.end("Api Running");
@@ -56,6 +52,7 @@ app.use("/api/users", userRouter);
 
 
 app.use((err: unknown, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error("ERROR →", err);
     if (err instanceof ApiError) {
         res.status(err.statusCode).json({
             success: false,

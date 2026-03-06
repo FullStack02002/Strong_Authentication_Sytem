@@ -8,11 +8,25 @@ import { ApiError } from "../../utils/ApiError.js";
 import { isValidObjectId } from "mongoose";
 
 
-export const createUser = asyncHandler(async (req: Request, res: Response) => {
+export const registerUser = asyncHandler(async (req: Request, res: Response) => {
     const { name, email, password } = req.body;
     const user = await userService.CreateUser({ name, email, password });
-    res.status(201).json(new ApiResponse(201, user, "User Created Successfully"))
+    res.status(201).json(new ApiResponse(201, user, "Registration successful. Verification link sent to your email"))
 })
+
+export const verifyEmail = asyncHandler(async(req:Request,res:Response)=>{
+    const {token,email} = req.query as {token:string;email:string};
+    const user = await userService.verifyEmail(email,token);
+    res.status(200).json(new ApiResponse(200,user,"Email Verified Successfully"));
+})
+
+export const resendVerification = asyncHandler(async(req:Request,res:Response)=>{
+    const {email} = req.body;
+    const result = await userService.resendVerification(email);
+    res.status(200).json(new ApiResponse(200,result,"Verification email sent"))
+})
+
+
 
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
     const users = await userService.getUsers();

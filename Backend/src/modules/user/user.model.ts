@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import type { IUserDocument } from "./user.types.js";
 import bcrypt from "bcrypt"
+import { UserRole } from "./user.types.js";
 
 
 
@@ -16,12 +17,22 @@ const userSchema = new Schema<IUserDocument>(
         email: {
             type: String,
             required: true,
-            trim: true
+            trim: true,
+            unique: true
         },
         password: {
             type: String,
             trim: true,
             select: false
+        },
+        role: {
+            type: String,
+            enum: Object.values(UserRole),
+            default: UserRole.USER,
+        },
+        isVerified: {
+            type: Boolean,
+            default: false
         }
     },
     {
@@ -37,7 +48,7 @@ userSchema.pre("save", async function (this: IUserDocument) {
 });
 
 userSchema.methods.comparePassword = async function (this: IUserDocument, enteredPassword: string): Promise<boolean> {
-    return bcrypt.compare(enteredPassword, this.password as string)
+    return await bcrypt.compare(enteredPassword, this.password as string)
 }
 
 

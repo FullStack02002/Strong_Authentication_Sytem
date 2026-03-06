@@ -1,12 +1,23 @@
 import { Router } from "express";
-import { createUserSchema, updateUserSchema } from "./user.validation.js";
+import { createUserSchema, updateUserSchema, verifyEmailSchema, resendVerificationSchema } from "./user.validation.js";
 import { validateRequest } from "../../middlewares/validate.middleware.js";
-import { createUser, getAllUsers, getById, deleteUser, updateUser } from "./user.controller.js";
+import {
+    registerUser, getAllUsers, getById, deleteUser,
+    updateUser, verifyEmail, resendVerification
+} from "./user.controller.js";
 
 
 const router = Router();
 
-router.post("/register", validateRequest(createUserSchema), createUser);
+
+// Auth Routes
+router.post("/register", validateRequest(createUserSchema), registerUser);
+router.post("/verify-email", validateRequest(verifyEmailSchema), verifyEmail);
+router.post("/resend-verify", validateRequest(resendVerificationSchema), resendVerification)
+
+
+
+// User Routes
 router.get("/", getAllUsers);
 router.get("/get/:id", getById);
 router.delete("/delete/:id", deleteUser);
