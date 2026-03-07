@@ -31,3 +31,15 @@ export const toUserResponseDTO = (user: any): UserResponseDTO => ({
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
 });
+
+
+export interface LoginUserDTO {
+    email: string;
+    password: string;
+}
+
+export interface LoginResponseDTO {
+    user: UserResponseDTO;
+    accessToken: string;
+    refreshToken: string
+}

@@ -72,8 +72,53 @@ export const verifyEmailSchema = z.object({
     params: z.object({}).passthrough(),
 });
 
+
+export const loginUserSchema = z.object({
+    body: z.object({
+        email: z
+            .string()
+            .min(1, "Email is required")
+            .email("Invalid email format")
+            .trim()
+            .toLowerCase(),
+
+        password: z
+            .string()
+            .min(1, "Password is required"),
+
+    }).strict(),
+    params: z.object({}).passthrough(),
+    query: z.object({}).passthrough(),
+});
+
+export const verifyLoginOTPSchema = z.object({
+    body: z.object({
+        email: z
+            .string()
+            .min(1, "Email is required")
+            .email("Invalid email format")
+            .trim()
+            .toLowerCase(),
+
+        otp: z
+            .string()
+            .min(1, "OTP is required")
+            .length(6, "OTP must be 6 digits")
+            .regex(/^\d+$/, "OTP must be numeric"),
+
+    }).strict(),
+    params: z.object({}).passthrough(),
+    query: z.object({}).passthrough(),
+});
+
+
+
+
 export type CreateUserInput = z.infer<typeof createUserSchema>;
 export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 export type ResendVerificationInput = z.infer<typeof resendVerificationSchema>;
 export type VerifyEmailInput = z.infer<typeof verifyEmailSchema>;
+export type loginUserInput = z.infer<typeof loginUserSchema>;
+export type VerifyLoginOTPInput = z.infer<typeof verifyLoginOTPSchema>;
+
 

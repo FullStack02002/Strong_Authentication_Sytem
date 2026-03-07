@@ -10,5 +10,9 @@ export const env = {
     UPSTASH_REDIS_URL: process.env.UPSTASH_REDIS_URL as string,
     SMTP_PASS: process.env.SMTP_PASS as string,
     SMTP_PORT: process.env.SMTP_PORT as string,
-    SMTP_USER: process.env.SMTP_USER as string
+    SMTP_USER: process.env.SMTP_USER as string,
+    ACCESS_TOKEN_SECRET:process.env.ACCESS_TOKEN_SECRET as string,
+    REFRESH_TOKEN_SECRET:process.env.REFRESH_TOKEN_SECRET as string,
+    ACCESS_TOKEN_EXPIRY:process.env.ACCESS_TOKEN_EXPIRY as string,
+    REFRESH_TOKEN_EXPIRY:process.env.REFRESH_TOKEN_EXPIRY as string
 }

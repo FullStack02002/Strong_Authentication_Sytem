@@ -11,7 +11,7 @@ export const transporter = nodemailer.createTransport({
 
 export const sendVerificationEmail = async (
     email: string,
-    token: string  
+    token: string
 ): Promise<void> => {
     const verifyUrl = `${env.FRONTEND_URL}/verify-email?token=${token}&email=${email}`;
 
@@ -35,6 +35,25 @@ export const sendVerificationEmail = async (
             </a>
             <p>This link expires in <b>10 minutes</b></p>
             <p>If you didn't request this, ignore this email</p>
+        `,
+    });
+};
+
+
+export const sendLoginOTPEmail = async (
+    email: string,
+    otp: string
+): Promise<void> => {
+    await transporter.sendMail({
+        from: `"Auth System" <${env.SMTP_USER}>`,
+        to: email,
+        subject: "Your Login OTP",
+        html: `
+            <h2>Login Verification</h2>
+            <p>Your OTP for login is:</p>
+            <h1 style="color: #4F46E5; letter-spacing: 8px">${otp}</h1>
+            <p>This OTP expires in <b>10 minutes</b></p>
+            <p>If you didn't try to login, please secure your account</p>
         `,
     });
 };

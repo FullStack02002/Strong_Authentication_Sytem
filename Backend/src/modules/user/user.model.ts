@@ -5,8 +5,6 @@ import { UserRole } from "./user.types.js";
 
 
 
-
-
 const userSchema = new Schema<IUserDocument>(
     {
         name: {
