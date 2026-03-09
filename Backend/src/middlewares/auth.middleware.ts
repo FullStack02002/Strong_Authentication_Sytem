@@ -19,7 +19,7 @@ export const verifyJWT = asyncHandler(async (req: Request, _: Response, next: Ne
 
     const cachedUser = await redis.get(`user:${decoded._id}`);
 
-    if(cachedUser){
+    if (cachedUser) {
         req.user = JSON.parse(cachedUser) as IUserDocument
         return next();
     }

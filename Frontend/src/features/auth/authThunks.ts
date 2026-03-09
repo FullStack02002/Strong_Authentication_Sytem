@@ -79,12 +79,19 @@ export const loginThunk = createAsyncThunk(
     async (data: { email: string; password: string }, { rejectWithValue }) => {
         try {
             const res = await authService.login(data);
+            toast.success("Otp Sent to Your Mail");
             return res.data;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || "Login failed");
+            const message = error?.response?.data?.message || "Failed  To Send Otp";
+            toast.error("Login Failed", {
+                description: message
+            })
+            return rejectWithValue(null);
         }
     }
 );
+
+
 
 // ─────────────────────────────────────────
 // Login Step 2 — verify OTP
@@ -94,12 +101,21 @@ export const verifyLoginOTPThunk = createAsyncThunk(
     async (data: { email: string; otp: string }, { rejectWithValue }) => {
         try {
             const res = await authService.verifyLoginOTP(data);
+            toast.success("Otp Verified", {
+                description: "Login Successfull"
+            })
             return res.data;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || "OTP verification failed");
+            const message = error?.response?.data?.message || "Login Failed";
+            toast.error("Login Failed", {
+                description: message
+            })
+            return rejectWithValue(null);
         }
     }
 );
+
+
 
 // ─────────────────────────────────────────
 // Restore Session

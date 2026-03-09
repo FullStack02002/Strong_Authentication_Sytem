@@ -32,7 +32,7 @@ const AppRoutes = () => {
             {/* ── Protected Routes ── */}
 
             <Route path={ROUTES.HOME} element={
-                <ProtectedRoute authentication={true}>
+                <ProtectedRoute authentication={false}>
                     <Home />
                 </ProtectedRoute>
             }

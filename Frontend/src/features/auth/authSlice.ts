@@ -20,7 +20,10 @@ const initialState: AuthState = {
     verifyingemail: false,
     emailverified: false,
     resendingemail: false,
-    verifyEmailFailed: false
+    verifyEmailFailed: false,
+    loginLoading: false,
+    loginOtpLoading: false,
+    restoreLoading:true
 };
 
 const authSlice = createSlice({
@@ -74,36 +77,36 @@ const authSlice = createSlice({
 
         // ── Login ──
         builder
-            .addCase(loginThunk.pending, (state) => { state.loading = true; })
-            .addCase(loginThunk.fulfilled, (state) => { state.loading = false; })
+            .addCase(loginThunk.pending, (state) => { state.loginLoading = true; })
+            .addCase(loginThunk.fulfilled, (state) => { state.loginLoading = false; })
             .addCase(loginThunk.rejected, (state) => {
-                state.loading = false;
+                state.loginLoading = false;
             });
 
         // ── Verify Login OTP ──
         builder
-            .addCase(verifyLoginOTPThunk.pending, (state) => { state.loading = true; })
+            .addCase(verifyLoginOTPThunk.pending, (state) => { state.loginOtpLoading = true; })
             .addCase(verifyLoginOTPThunk.fulfilled, (state, action) => {
-                state.loading = false;
+                state.loginOtpLoading = false;
                 state.user = action.payload.user;
                 state.accessToken = action.payload.accessToken;
                 state.isAuthenticated = true;
             })
             .addCase(verifyLoginOTPThunk.rejected, (state) => {
-                state.loading = false;
+                state.loginOtpLoading = false;
             });
 
         // ── Restore Session ──
         builder
-            .addCase(restoreSession.pending, (state) => { state.loading = true; })
+            .addCase(restoreSession.pending, (state) => { state.restoreLoading   = true; })
             .addCase(restoreSession.fulfilled, (state, action) => {
-                state.loading = false;
-                state.user = action.payload.user;
-                state.accessToken = action.payload.accessToken;
-                state.isAuthenticated = true;
+                state.restoreLoading   = false;
+                state.user = action.payload?.user ?? null;
+                state.accessToken = action.payload?.accessToken ?? null;
+                state.isAuthenticated = !!action.payload?.user;
             })
             .addCase(restoreSession.rejected, (state) => {
-                state.loading = false;
+                state.restoreLoading = false;
                 state.isAuthenticated = false;
             });
 

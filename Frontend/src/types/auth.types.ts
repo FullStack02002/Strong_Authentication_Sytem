@@ -16,8 +16,11 @@ export interface AuthState {
     registerLoading: boolean;
     verifyingemail: boolean;
     emailverified: boolean;
-    resendingemail:boolean;
-    verifyEmailFailed :boolean;
+    resendingemail: boolean;
+    verifyEmailFailed: boolean;
+    loginLoading: boolean;
+    loginOtpLoading:boolean;
+    restoreLoading:boolean;
 }
 
 export interface RegisterDTO {
