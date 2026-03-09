@@ -1,51 +1,116 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import authService from "../../services/authService";
-import type { LoginDTO, RegisterDTO, VerifyOTPDTO, ResendVerificationDTO } from "../../types/auth.types";
+import { toast } from "sonner";
 
-
-
-
+// ─────────────────────────────────────────
+// Register
+// ─────────────────────────────────────────
 export const registerThunk = createAsyncThunk(
     "auth/register",
-    async (data: RegisterDTO, { rejectWithValue }) => {
+    async (data: { name: string; email: string; password: string }, { rejectWithValue }) => {
         try {
-            return await authService.register(data);
+            const res = await authService.register(data);
+            toast.success("Account created!", {
+                description: "Check your email to verify your account.",
+            });
+            return res.data;
         } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || "Registration failed");
+            const message = error?.response?.data?.message || "Registration failed";
+            toast.error("Registration failed", {
+                description: message,
+            });
+            return rejectWithValue(null);
         }
     }
 );
 
+// ─────────────────────────────────────────
+// Email Verification
+// ─────────────────────────────────────────
+
+export const verifyEmailThunk = createAsyncThunk(
+    "auth/verifyEmail",
+    async (data: { token: string; email: string }, { rejectWithValue }) => {
+        try {
+            const res = await authService.verifyEmail(data.token, data.email);
+            toast.success("Email Verified Successfully");
+            return res.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message || "Email Verification Failed";
+            toast.error("Email Verification Failed", {
+                description: message,
+            })
+            return rejectWithValue(null);
+        }
+    }
+);
+
+
+// ─────────────────────────────────────────
+// Resend Verification
+// ─────────────────────────────────────────
+export const resendVerificationThunk = createAsyncThunk(
+    "auth/resendVerification",
+    async (data: { email: string }, { rejectWithValue }) => {
+        try {
+            const res = await authService.resendVerification(data);
+            toast.success("Resent Successfully", {
+                description: "Check your email to verify your account.",
+            });
+            return res.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message || "Failed To Resend Email";
+            toast.error("Resend Failed", {
+                description: message,
+            })
+            return rejectWithValue(null);
+        }
+    }
+);
+
+
+
+
+// ─────────────────────────────────────────
+// Login Step 1
+// ─────────────────────────────────────────
 export const loginThunk = createAsyncThunk(
     "auth/login",
-    async (data: LoginDTO, { rejectWithValue }) => {
+    async (data: { email: string; password: string }, { rejectWithValue }) => {
         try {
-            return await authService.login(data);
+            const res = await authService.login(data);
+            return res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Login failed");
         }
     }
 );
 
+// ─────────────────────────────────────────
+// Login Step 2 — verify OTP
+// ─────────────────────────────────────────
 export const verifyLoginOTPThunk = createAsyncThunk(
     "auth/verifyLoginOTP",
-    async (data: VerifyOTPDTO, { rejectWithValue }) => {
+    async (data: { email: string; otp: string }, { rejectWithValue }) => {
         try {
             const res = await authService.verifyLoginOTP(data);
-            return res.data; // { user, accessToken }
+            return res.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "OTP verification failed");
         }
     }
 );
 
+// ─────────────────────────────────────────
+// Restore Session
+// ─────────────────────────────────────────
 export const restoreSession = createAsyncThunk(
     "auth/restoreSession",
     async (_, { rejectWithValue }) => {
         try {
-            const refreshRes  = await authService.refreshToken();
+            const refreshRes = await authService.refreshToken();
             const accessToken = refreshRes.data.accessToken as string;
-            const userRes     = await authService.getCurrentUser();
+            const userRes = await authService.getCurrentUser();
             return { user: userRes.data, accessToken };
         } catch {
             return rejectWithValue("Session expired");
@@ -53,22 +118,16 @@ export const restoreSession = createAsyncThunk(
     }
 );
 
-export const resendVerificationThunk = createAsyncThunk(
-    "auth/resendVerification",
-    async (data: ResendVerificationDTO, { rejectWithValue }) => {
-        try {
-            return await authService.resendVerification(data);
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || "Failed to resend");
-        }
-    }
-);
 
+
+// ─────────────────────────────────────────
+// Logout
+// ─────────────────────────────────────────
 export const logoutThunk = createAsyncThunk(
     "auth/logout",
     async (_, { rejectWithValue }) => {
         try {
-            return await authService.logout();
+            await authService.logout();
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Logout failed");
         }

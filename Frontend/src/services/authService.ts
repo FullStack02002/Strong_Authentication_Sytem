@@ -19,7 +19,7 @@ const authService = {
     },
 
     verifyEmail: async (token: string, email: string) => {
-        const res = await axiosInstance.get(`/users/verify-email?token=${token}&email=${email}`);
+        const res = await axiosInstance.post(`/users/verify-email?token=${token}&email=${email}`);
         return res.data;
     },
 

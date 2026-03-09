@@ -19,9 +19,12 @@ export const createUserSchema = z.object({
 
         password: z
             .string()
-            .min(1, "Password is required")
-            .min(6, "Password must be at least 6 characters")
-            .max(32, "Password too long"),
+            .min(8, "Password must be at least 8 characters")
+            .max(32, "Password must be at most 32 characters")
+            .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+            .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+            .regex(/[0-9]/, "Password must contain at least one number")
+            .regex(/[@$!%*?&#^]/, "Password must contain at least one special character (@$!%*?&#^)"),
     }).strict(),
 });
 
@@ -44,8 +47,12 @@ export const updateUserSchema = z.object({
 
         password: z
             .string()
-            .min(6, "Password must be at least 6 characters")
-            .max(32, "Password too long")
+            .min(8, "Password must be at least 8 characters")
+            .max(32, "Password must be at most 32 characters")
+            .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+            .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+            .regex(/[0-9]/, "Password must contain at least one number")
+            .regex(/[@$!%*?&#^]/, "Password must contain at least one special character (@$!%*?&#^)")
             .optional(),
     }).strict(),
 });
@@ -64,7 +71,7 @@ export const resendVerificationSchema = z.object({
 });
 
 export const verifyEmailSchema = z.object({
-    body: z.object({}).passthrough().optional(), 
+    body: z.object({}).passthrough().optional(),
     query: z.object({
         token: z.string().min(1, "Token is required"),
         email: z.string().min(1, "Email is required").email("Invalid email"),

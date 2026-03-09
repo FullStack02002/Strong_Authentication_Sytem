@@ -52,7 +52,6 @@ app.use("/api/users", userRouter);
 
 
 app.use((err: unknown, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.error("ERROR →", err);
     if (err instanceof ApiError) {
         res.status(err.statusCode).json({
             success: false,

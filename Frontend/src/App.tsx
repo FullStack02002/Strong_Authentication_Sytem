@@ -1,14 +1,14 @@
 // import { useEffect } from "react";
-// import { useAppDispatch } from "./hooks/useAppDispatch";
+// import { store } from "./app/store";
 // import { restoreSession } from "./features/auth/authThunks";
 import AppRoutes from "./routes/AppRoutes";
 
+
 const App = () => {
-    // const dispatch = useAppDispatch();
 
     // useEffect(() => {
-    //     (dispatch as any)(restoreSession());
-    // }, [dispatch]);
+    //     (store.dispatch as any)(restoreSession());
+    // }, []);
 
     return <AppRoutes />;
 };

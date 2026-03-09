@@ -1,5 +1,5 @@
 import { Navigate } from "react-router-dom";
-import { useAppSelector } from "../../hooks/useAppSelector";
+import { useAppSelector } from "../../app/hook";
 import { ROUTES } from "../../routes/routePaths";
 
 interface ProtectedRouteProps {

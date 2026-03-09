@@ -13,16 +13,20 @@ export interface AuthState {
     accessToken: string | null;
     isAuthenticated: boolean;
     loading: boolean;
-    error: string | null;
-}
-
-export interface LoginDTO {
-    email: string;
-    password: string;
+    registerLoading: boolean;
+    verifyingemail: boolean;
+    emailverified: boolean;
+    resendingemail:boolean;
+    verifyEmailFailed :boolean;
 }
 
 export interface RegisterDTO {
     name: string;
+    email: string;
+    password: string;
+}
+
+export interface LoginDTO {
     email: string;
     password: string;
 }
