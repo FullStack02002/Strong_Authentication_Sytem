@@ -133,13 +133,6 @@ export const loginUser = async (data: LoginUserDTO) => {
     const isPasswordCorrect = await user.comparePassword(password);
     if (!isPasswordCorrect) throw new ApiError(401, "Invalid credentials");
 
-    const rateKey = getOTPRateKey(email);
-    const attempts = await redis.incr(rateKey);
-    if (attempts === 1) await redis.expire(rateKey, 900);
-    if (attempts > 3) {
-        const ttl = await redis.ttl(rateKey);
-        throw new ApiError(429, `Too many attempts. Try again in ${ttl} seconds`);
-    }
 
     const otp = generateOTP();
     const hashedOTP = hashToken(otp);
@@ -150,8 +143,6 @@ export const loginUser = async (data: LoginUserDTO) => {
         await sendLoginOTPEmail(data.email, otp);
     } catch (error) {
         await redis.del(getLoginOTPKey(data.email));
-        await redis.decr(rateKey);
-
         throw new ApiError(500, "Failed to send OTP email. Please try again");
 
     }
@@ -198,6 +189,43 @@ export const verifyLoginOTP = async (email: string, otp: string): Promise<LoginR
     };
 };
 
+export const resendLoginOTP = async (email: string) => {
+    const user = await User.findOne({ email });
+    if (!user) throw new ApiError(404, "User not found");
+
+    if (!user.isVerified) throw new ApiError(403, "Please verify your email first");
+
+
+    // rate limit max-3 resends per hour
+    const resendKey = getOTPRateKey(email);
+    const attempts = await redis.incr(resendKey);
+    await redis.expire(resendKey, 3600);
+
+
+    if (attempts > 3) {
+        const ttl = await redis.ttl(resendKey);
+        throw new ApiError(429, `Too many attempts. Try again in ${ttl} seconds`);
+    }
+
+    // clean old otp before setting new one 
+    await redis.del(getLoginOTPKey(email));
+
+
+    const otp = generateOTP();
+    const hashedOTP = hashToken(otp);
+    await redis.set(getLoginOTPKey(email), hashedOTP, "EX", 600);
+
+    try {
+        await sendLoginOTPEmail(email, otp);
+    } catch (error) {
+        await redis.del(getLoginOTPKey(email));
+        throw new ApiError(500, "Failed to send OTP email. Please try again");
+    }
+    return { message: "OTP sent to your email" }
+
+
+}
+
 export const refreshToken = async (token: string): Promise<{ accessToken: string }> => {
     const decoded = verifyRefreshToken(token);
 
@@ -223,11 +251,7 @@ export const logoutUser = async (userId: string): Promise<void> => {
 
 
 
-
 // Auth Services
-
-
-
 
 export const getUsers = async () => {
     return User.find();

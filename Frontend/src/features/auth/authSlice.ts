@@ -9,6 +9,7 @@ import {
     verifyLoginOTPThunk,
     restoreSession,
     logoutThunk,
+    resendLoginOTPThunk
 } from "./authThunks";
 
 const initialState: AuthState = {
@@ -23,7 +24,9 @@ const initialState: AuthState = {
     verifyEmailFailed: false,
     loginLoading: false,
     loginOtpLoading: false,
-    restoreLoading:true
+    restoreLoading: true,
+    logoutLoading: false,
+    resendOtpLoading: false
 };
 
 const authSlice = createSlice({
@@ -96,11 +99,19 @@ const authSlice = createSlice({
                 state.loginOtpLoading = false;
             });
 
+        // --- Resend Login OTP ---
+        builder
+            .addCase(resendLoginOTPThunk.pending, (state) => { state.resendOtpLoading = true; })
+            .addCase(resendLoginOTPThunk.fulfilled, (state) => { state.resendOtpLoading = false; })
+            .addCase(resendLoginOTPThunk.rejected, (state) => {
+                state.resendOtpLoading = false;
+            });
+
         // ── Restore Session ──
         builder
-            .addCase(restoreSession.pending, (state) => { state.restoreLoading   = true; })
+            .addCase(restoreSession.pending, (state) => { state.restoreLoading = true; })
             .addCase(restoreSession.fulfilled, (state, action) => {
-                state.restoreLoading   = false;
+                state.restoreLoading = false;
                 state.user = action.payload?.user ?? null;
                 state.accessToken = action.payload?.accessToken ?? null;
                 state.isAuthenticated = !!action.payload?.user;
@@ -112,11 +123,16 @@ const authSlice = createSlice({
 
         // ── Logout ──
         builder
+            .addCase(logoutThunk.pending, (state) => { state.logoutLoading = true })
             .addCase(logoutThunk.fulfilled, (state) => {
+                state.logoutLoading = false;
                 state.user = null;
                 state.accessToken = null;
                 state.isAuthenticated = false;
-            });
+            })
+            .addCase(logoutThunk.rejected, (state) => {
+                state.logoutLoading = false;
+            })
     },
 });
 

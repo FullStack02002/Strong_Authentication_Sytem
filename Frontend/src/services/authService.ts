@@ -1,5 +1,5 @@
 import axiosInstance from "./axiosInstance";
-import type { LoginDTO, RegisterDTO, VerifyOTPDTO, ResendVerificationDTO } from "../types/auth.types";
+import type { LoginDTO, RegisterDTO, VerifyOTPDTO, ResendVerificationDTO, ResendLoginOTPDTO } from "../types/auth.types";
 
 const authService = {
 
@@ -22,7 +22,10 @@ const authService = {
         const res = await axiosInstance.post(`/users/verify-email?token=${token}&email=${email}`);
         return res.data;
     },
-
+    resendLoginOtp: async (data: ResendLoginOTPDTO) => {
+        const res = await axiosInstance.post(`/users/resend-otp`, data);
+        return res.data;
+    },
     resendVerification: async (data: ResendVerificationDTO) => {
         const res = await axiosInstance.post("/users/resend-verify", data);
         return res.data;

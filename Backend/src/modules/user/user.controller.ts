@@ -39,6 +39,12 @@ export const resendVerification = asyncHandler(async (req: Request, res: Respons
     res.status(200).json(new ApiResponse(200, result, "Verification email sent"))
 })
 
+export const resendLoginOTP = asyncHandler(async (req: Request, res: Response) => {
+    const { email } = req.body;
+    const result = await userService.resendLoginOTP(email);
+    res.status(200).json(new ApiResponse(200, result, "Otp Resent Successfully"));
+})
+
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     const { email, password } = req.body;
     const result = await userService.loginUser({ email, password });

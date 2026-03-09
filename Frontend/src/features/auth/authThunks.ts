@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import authService from "../../services/authService";
 import { toast } from "sonner";
+import { broadcastLogout } from "../../utils/authSync";
 
 // ─────────────────────────────────────────
 // Register
@@ -69,6 +70,28 @@ export const resendVerificationThunk = createAsyncThunk(
 );
 
 
+// ─────────────────────────────────────────
+// Resend Login OTP
+// ─────────────────────────────────────────
+
+export const resendLoginOTPThunk = createAsyncThunk(
+    "auth/resendLoginOTP",
+    async (data: { email: string }, { rejectWithValue }) => {
+        try {
+            const res = await authService.resendLoginOtp(data);
+            toast.success("Otp Resent Successfully", {
+                description: "Check your email"
+            })
+            return res.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message || "Failed to Resent OTP";
+            toast.error("Resent Failed", {
+                description: message,
+            })
+            return rejectWithValue(null);
+        }
+    }
+)
 
 
 // ─────────────────────────────────────────
@@ -146,6 +169,9 @@ export const logoutThunk = createAsyncThunk(
             await authService.logout();
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || "Logout failed");
+        }
+        finally {
+            broadcastLogout(); 
         }
     }
 );

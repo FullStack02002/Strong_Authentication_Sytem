@@ -32,9 +32,7 @@ const AppRoutes = () => {
             {/* ── Protected Routes ── */}
 
             <Route path={ROUTES.HOME} element={
-                <ProtectedRoute authentication={false}>
-                    <Home />
-                </ProtectedRoute>
+                <Home />
             }
             />
 

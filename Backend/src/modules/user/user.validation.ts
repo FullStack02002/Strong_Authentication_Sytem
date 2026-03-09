@@ -70,6 +70,20 @@ export const resendVerificationSchema = z.object({
     query: z.object({}).passthrough(),
 });
 
+export const resendLoginOTPSchema =
+    z.object({
+        body: z.object({
+            email: z
+                .string()
+                .min(1, "Email is required")
+                .email("Invalid email format")
+                .trim()
+                .toLowerCase(),
+        }).strict(),
+        params: z.object({}).passthrough(),
+        query: z.object({}).passthrough(),
+    });
+
 export const verifyEmailSchema = z.object({
     body: z.object({}).passthrough().optional(),
     query: z.object({

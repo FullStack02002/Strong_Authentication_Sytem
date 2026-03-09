@@ -19,8 +19,10 @@ export interface AuthState {
     resendingemail: boolean;
     verifyEmailFailed: boolean;
     loginLoading: boolean;
-    loginOtpLoading:boolean;
-    restoreLoading:boolean;
+    loginOtpLoading: boolean;
+    restoreLoading: boolean;
+    logoutLoading: boolean;
+    resendOtpLoading:boolean;
 }
 
 export interface RegisterDTO {
@@ -41,4 +43,8 @@ export interface VerifyOTPDTO {
 
 export interface ResendVerificationDTO {
     email: string;
+}
+
+export interface ResendLoginOTPDTO{
+    email:string
 }
