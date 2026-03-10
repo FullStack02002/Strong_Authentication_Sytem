@@ -3,7 +3,7 @@ import { ApiError } from "../../utils/ApiError.js";
 import { toUserResponseDTO, type CreateUserDTO, type UpdateUserDTO, type LoginUserDTO, type LoginResponseDTO } from "./user.dto.js";
 import type { IUserDocument } from "./user.types.js";
 import { redis } from "../../config/redis.js";
-import { sendVerificationEmail, sendLoginOTPEmail } from "../../config/mailer.js";
+import { sendVerificationEmail, sendLoginOTPEmail, sendForgotPasswordEmail } from "../../config/mailer.js";
 import { generateToken, hashToken, generateOTP } from "../../utils/token.js";
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from "../../utils/utils.js";
 import { invalidateUserCache } from "../../utils/cache.js";
@@ -13,6 +13,8 @@ const getResendKey = (email: string) => `resend:${email}`;
 const getRefreshKey = (userId: string) => `refresh:${userId}`;
 const getLoginOTPKey = (email: string) => `loginotp:${email}`;
 const getOTPRateKey = (email: string) => `loginotp:rate:${email}`;
+const getForgotPasswordKey = (email: string) => `forgot:${email}`;
+const getForgotPasswordRate = (email: string) => `forgot:rate:${email}`;
 
 
 
@@ -49,6 +51,7 @@ export const CreateUser = async (data: CreateUserDTO) => {
 
     return toUserResponseDTO(user);
 }
+
 
 export const verifyEmail = async (email: string, token: string) => {
 
@@ -247,6 +250,80 @@ export const logoutUser = async (userId: string): Promise<void> => {
     await redis.del(getRefreshKey(userId));
 };
 
+export const forgotPassword = async (email: string) => {
+    const user = await User.findOne({ email });
+
+    if (!user) return { message: "If this email exists, a reset link has been sent" };
+
+    if (!user.isVerified) throw new ApiError(403, "Please verify your email first");
+
+    const rateKey = getForgotPasswordRate(email);
+    const attempts = await redis.incr(rateKey);
+    await redis.expire(rateKey, 3600);
+
+    if (attempts > 3) {
+        const ttl = await redis.ttl(rateKey);
+        throw new ApiError(429, `Too many attempts. Try again in ${ttl} seconds`);
+    }
+
+
+    // generate Token
+    const token = generateToken();
+    const hashedToken = hashToken(token);
+
+    // store hashed token in Redis — 15 min expiry
+    await redis.set(getForgotPasswordKey(email), hashedToken, "EX", 900);
+
+    //  send email
+    try {
+        await sendForgotPasswordEmail(email, token);
+    } catch (error) {
+        await redis.del(getForgotPasswordKey(email));
+        throw new ApiError(500, "Failed to send reset email. Please try again");
+    }
+
+    return { message: "If this email exists, a reset link has been sent" };
+
+}
+
+
+export const resetPassword = async (
+    email: string,
+    token: string,
+    newPassword: string
+) => {
+    // get stored hashed Token
+
+    const storedHash = await redis.get(getForgotPasswordKey(email));
+    if (!storedHash) {
+        throw new ApiError(400, "Reset link has expired or is invalid")
+    }
+
+    // has incoming token and compare
+    const hashedToken = hashToken(token);
+    if (hashedToken !== storedHash) {
+        throw new ApiError(400, "Invalid rest token");
+    }
+
+    // find user 
+
+    const user = await User.findOne({ email }).select("+password");
+    if (!user) throw new ApiError(404, "User not found");
+
+    // update password
+    user.password = newPassword;
+    await user.save();
+
+    // delete token 
+    await redis.del(getForgotPasswordKey(email));
+
+    // Invalidate all existing refresh tokens
+
+    await redis.del(`refresh:${user._id}`);
+
+
+    return { message: "Password reset successfully" };
+}
 
 
 

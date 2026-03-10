@@ -6,7 +6,7 @@ import { loginThunk, verifyLoginOTPThunk, resendLoginOTPThunk } from "../../feat
 import { useAppDispatch, useAppSelector } from "../../app/hook";
 
 interface LoginFormData {
-    email:    string;
+    email: string;
     password: string;
 }
 
@@ -17,16 +17,16 @@ interface OTPFormData {
 const OTP_COOLDOWN = 60;
 
 const Login = () => {
-    const dispatch   = useAppDispatch();
-    const navigate   = useNavigate();
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
-    const loginLoading   = useAppSelector((state) => state.auth.loginLoading);
-    const otpLoading     = useAppSelector((state) => state.auth.loginOtpLoading);
-    const resendLoading  = useAppSelector((state) => state.auth.resendOtpLoading);
+    const loginLoading = useAppSelector((state) => state.auth.loginLoading);
+    const otpLoading = useAppSelector((state) => state.auth.loginOtpLoading);
+    const resendLoading = useAppSelector((state) => state.auth.resendOtpLoading);
 
-    const [step, setStep]           = useState<"login" | "otp">("login");
-    const [email, setEmail]         = useState("");
-    const [countdown, setCountdown] = useState(OTP_COOLDOWN); 
+    const [step, setStep] = useState<"login" | "otp">("login");
+    const [email, setEmail] = useState("");
+    const [countdown, setCountdown] = useState(OTP_COOLDOWN);
 
     // ── Login Form ──
     const {
@@ -37,11 +37,11 @@ const Login = () => {
 
     // ── OTP Form ──
     const {
-        register:     registerOTP,
+        register: registerOTP,
         handleSubmit: handleSubmitOTP,
-        formState:    { errors: otpErrors },
-        setValue:     setOTPValue,
-        watch:        watchOTP,
+        formState: { errors: otpErrors },
+        setValue: setOTPValue,
+        watch: watchOTP,
     } = useForm<OTPFormData>();
 
     //  start countdown when step changes to otp
@@ -63,7 +63,7 @@ const Login = () => {
     // ── Step 1 — Login ──
     const onLogin = async (data: LoginFormData) => {
         const result = await (dispatch as any)(loginThunk({
-            email:    data.email,
+            email: data.email,
             password: data.password,
         }));
 
@@ -162,7 +162,7 @@ const Login = () => {
                                     {...register("email", {
                                         required: "Email is required",
                                         pattern: {
-                                            value:   /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                                             message: "Invalid email format",
                                         },
                                         setValueAs: (v) => v.trim().toLowerCase(),
@@ -176,27 +176,40 @@ const Login = () => {
                             </div>
 
                             {/* ── Password ── */}
+
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-sm font-medium text-gray-300 tracking-wide">
-                                    Password
-                                </label>
+
+                                <div className="flex items-center justify-between">
+                                    <label className="text-sm font-medium text-gray-300 tracking-wide">
+                                        Password
+                                    </label>
+                                </div>
+
                                 <input
                                     type="password"
                                     placeholder="Enter your password"
                                     className={`w-full px-4 py-3 rounded-xl bg-gray-800/80 border text-white text-sm outline-none transition-all duration-200 placeholder-gray-600
-                                        ${errors.password
-                                            ? "border-red-500/70 focus:border-red-400"
-                                            : "border-gray-700/70 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
+            ${errors.password ? "border-red-500/70 focus:border-red-400" : "border-gray-700/70 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
                                         }`}
                                     {...register("password", {
                                         required: "Password is required",
                                     })}
                                 />
-                                {errors.password && (
-                                    <span className="text-xs text-red-400 flex items-center gap-1">
-                                        <span>⚡</span> {errors.password.message}
-                                    </span>
-                                )}
+                                <div className="flex items-center justify-between min-h-[16px]">
+                                    {errors.password ? (
+                                        <span className="text-xs text-red-400 flex items-center gap-1">
+                                            <span>⚡</span> {errors.password.message}
+                                        </span>
+                                    ) : (
+                                        <span />
+                                    )}
+                                    <Link
+                                        to={ROUTES.FORGOT_PASSWORD}
+                                        className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
+                                    >
+                                        Forgot password?
+                                    </Link>
+                                </div>
                             </div>
 
                             {/* ── Submit ── */}
@@ -250,10 +263,10 @@ const Login = () => {
                                             : "border-gray-700/70 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
                                         }`}
                                     {...registerOTP("otp", {
-                                        required:  "OTP is required",
+                                        required: "OTP is required",
                                         minLength: { value: 6, message: "OTP must be 6 digits" },
                                         maxLength: { value: 6, message: "OTP must be 6 digits" },
-                                        pattern:   { value: /^\d{6}$/, message: "OTP must be 6 digits" },
+                                        pattern: { value: /^\d{6}$/, message: "OTP must be 6 digits" },
                                     })}
                                     onChange={handleOTPChange}
                                 />

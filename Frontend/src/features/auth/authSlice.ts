@@ -9,7 +9,9 @@ import {
     verifyLoginOTPThunk,
     restoreSession,
     logoutThunk,
-    resendLoginOTPThunk
+    resendLoginOTPThunk,
+    forgotPasswordThunk,
+    resetPasswordThunk
 } from "./authThunks";
 
 const initialState: AuthState = {
@@ -26,7 +28,9 @@ const initialState: AuthState = {
     loginOtpLoading: false,
     restoreLoading: true,
     logoutLoading: false,
-    resendOtpLoading: false
+    resendOtpLoading: false,
+    forgotPasswordLoading: false,
+    resetPasswordLoading: false
 };
 
 const authSlice = createSlice({
@@ -105,6 +109,24 @@ const authSlice = createSlice({
             .addCase(resendLoginOTPThunk.fulfilled, (state) => { state.resendOtpLoading = false; })
             .addCase(resendLoginOTPThunk.rejected, (state) => {
                 state.resendOtpLoading = false;
+            });
+
+        // ── ForgotPassword ──
+        builder
+            .addCase(forgotPasswordThunk.pending, (state) => { state.forgotPasswordLoading = true; })
+            .addCase(forgotPasswordThunk.fulfilled, (state) => {
+                state.forgotPasswordLoading = false;
+            })
+            .addCase(forgotPasswordThunk.rejected, (state) => {
+                state.forgotPasswordLoading = false;
+            });
+
+        // --- Reset Password ---
+        builder
+            .addCase(resetPasswordThunk.pending, (state) => { state.resetPasswordLoading = true; })
+            .addCase(resetPasswordThunk.fulfilled, (state) => { state.resetPasswordLoading = false; })
+            .addCase(resetPasswordThunk.rejected, (state) => {
+                state.resetPasswordLoading = false;
             });
 
         // ── Restore Session ──

@@ -81,6 +81,23 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
     res.status(200).json(new ApiResponse(200, null, "Logged out successfully"));
 });
 
+export const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    const result = await userService.forgotPassword(email);
+
+    res.status(200).json(new ApiResponse(200, result, result.message));
+
+})
+
+export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
+    const { token, email } = req.query as { token: string; email: string };
+    const { newPassword } = req.body;
+
+    const result = await userService.resetPassword(email, token, newPassword);
+
+    res.status(200).json(new ApiResponse(200, result, result.message));
+})
 
 
 

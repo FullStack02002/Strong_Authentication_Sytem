@@ -4,15 +4,10 @@ import { ROUTES } from "../../routes/routePaths";
 import { verifyEmailThunk, resendVerificationThunk } from "../../features/auth/authThunks";
 import { useAppDispatch, useAppSelector } from "../../app/hook";
 import { resetVerifyState } from "../../features/auth/authSlice";
+import { maskEmail } from "../../utils/maskEmail";
 
 const RESEND_COOLDOWN = 60;
 
-const maskEmail = (email: string) => {
-    const [local, domain] = email.split("@");
-    if (!local || !domain) return email;
-    const masked = local[0] + "*".repeat(Math.max(local.length - 1, 3));
-    return `${masked}@${domain}`;
-};
 
 const VerifyEmail = () => {
     const navigate = useNavigate();

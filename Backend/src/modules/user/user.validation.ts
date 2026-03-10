@@ -132,6 +132,34 @@ export const verifyLoginOTPSchema = z.object({
     query: z.object({}).passthrough(),
 });
 
+export const forgotPasswordSchema = z.object({
+    body: z.object({
+        email: z
+            .string()
+            .min(1, "Email is required")
+            .email("Invalid email format")
+            .trim()
+            .toLowerCase(),
+    }).strict(),
+});
+
+
+export const resetPasswordSchema = z.object({
+    query: z.object({
+        token: z.string().min(1, "Token is required"),
+        email: z.string().min(1, "Email is required").email("Invalid email"),
+    }),
+    body: z.object({
+        newPassword: z
+            .string()
+            .min(8, "Password must be at least 8 characters")
+            .max(32, "Password must be at most 32 characters")
+            .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+            .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+            .regex(/[0-9]/, "Password must contain at least one number")
+            .regex(/[@$!%*?&#^]/, "Password must contain at least one special character (@$!%*?&#^)"),
+    }).strict(),
+});
 
 
 

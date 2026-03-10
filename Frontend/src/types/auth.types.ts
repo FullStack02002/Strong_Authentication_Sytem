@@ -22,7 +22,9 @@ export interface AuthState {
     loginOtpLoading: boolean;
     restoreLoading: boolean;
     logoutLoading: boolean;
-    resendOtpLoading:boolean;
+    resendOtpLoading: boolean;
+    forgotPasswordLoading: boolean;
+    resetPasswordLoading: boolean
 }
 
 export interface RegisterDTO {
@@ -45,6 +47,10 @@ export interface ResendVerificationDTO {
     email: string;
 }
 
-export interface ResendLoginOTPDTO{
-    email:string
+export interface ResendLoginOTPDTO {
+    email: string
+}
+
+export interface ForgotPasswordDTO {
+    email: string
 }

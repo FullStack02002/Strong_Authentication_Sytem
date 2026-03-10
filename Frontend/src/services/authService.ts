@@ -1,5 +1,8 @@
 import axiosInstance from "./axiosInstance";
-import type { LoginDTO, RegisterDTO, VerifyOTPDTO, ResendVerificationDTO, ResendLoginOTPDTO } from "../types/auth.types";
+import type {
+    LoginDTO, RegisterDTO, VerifyOTPDTO,
+    ResendVerificationDTO, ResendLoginOTPDTO, ForgotPasswordDTO
+} from "../types/auth.types";
 
 const authService = {
 
@@ -30,7 +33,14 @@ const authService = {
         const res = await axiosInstance.post("/users/resend-verify", data);
         return res.data;
     },
-
+    forgotPassword: async (data: ForgotPasswordDTO) => {
+        const res = await axiosInstance.post("/users/forgot-password", data);
+        return res.data;
+    },
+    resetPassword: async (token: string, email: string, newPassword: string) => {
+        const res = await axiosInstance.post(`/users/reset-password?token=${token}&email=${email}`, { newPassword });
+        return res.data;
+    },
     refreshToken: async () => {
         const res = await axiosInstance.post("/users/refresh-token");
         return res.data;

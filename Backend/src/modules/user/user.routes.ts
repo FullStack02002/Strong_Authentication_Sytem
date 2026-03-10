@@ -2,14 +2,15 @@ import { Router } from "express";
 import {
     createUserSchema, updateUserSchema,
     verifyEmailSchema, resendVerificationSchema,
-    loginUserSchema, verifyLoginOTPSchema, resendLoginOTPSchema
+    loginUserSchema, verifyLoginOTPSchema, resendLoginOTPSchema,
+    forgotPasswordSchema, resetPasswordSchema
 } from "./user.validation.js";
 import { validateRequest } from "../../middlewares/validate.middleware.js";
 import {
     registerUser, getAllUsers, getById, deleteUser,
     updateUser, verifyEmail, resendVerification,
     loginUser, verifyLoginOTP, logoutUser, refreshToken,
-    getCurrentUser, resendLoginOTP
+    getCurrentUser, resendLoginOTP, forgotPassword, resetPassword
 } from "./user.controller.js";
 import { verifyJWT, authorizeRoles } from "../../middlewares/auth.middleware.js";
 
@@ -24,6 +25,8 @@ router.post("/resend-otp", validateRequest(resendLoginOTPSchema), resendLoginOTP
 router.post("/login", validateRequest(loginUserSchema), loginUser);
 router.post("/login/verify-otp", validateRequest(verifyLoginOTPSchema), verifyLoginOTP);
 router.post("/refresh-token", refreshToken);
+router.post("/forgot-password", validateRequest(forgotPasswordSchema), forgotPassword);
+router.post("/reset-password", validateRequest(resetPasswordSchema), resetPassword);
 
 
 

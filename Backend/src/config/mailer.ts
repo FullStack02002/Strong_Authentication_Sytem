@@ -57,3 +57,34 @@ export const sendLoginOTPEmail = async (
         `,
     });
 };
+
+
+export const sendForgotPasswordEmail = async (
+    email: string,
+    token: string
+): Promise<void> => {
+    const resetUrl = `${env.FRONTEND_URL}/reset-password?token=${token}&email=${email}`;
+
+    await transporter.sendMail({
+        from:    `"Auth System" <${env.SMTP_USER}>`,
+        to:      email,
+        subject: "Reset your password",
+        html: `
+            <h2>Password Reset</h2>
+            <p>You requested a password reset. Click the button below:</p>
+            <a href="${resetUrl}"
+               style="
+                background: #9333ea;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 6px;
+                text-decoration: none;
+               "
+            >
+                Reset Password
+            </a>
+            <p>This link expires in <b>15 minutes</b></p>
+            <p>If you didn't request this, ignore this email</p>
+        `,
+    });
+};

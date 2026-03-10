@@ -141,6 +141,52 @@ export const verifyLoginOTPThunk = createAsyncThunk(
 
 
 // ─────────────────────────────────────────
+// Forgot Password
+// ─────────────────────────────────────────
+
+export const forgotPasswordThunk = createAsyncThunk(
+    "auth/forgotPassword",
+    async (data: { email: string }, { rejectWithValue }) => {
+        try {
+            const res = await authService.forgotPassword(data);
+            toast.success("Reset Password Link Sent To Your Mail");
+            return res.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message || "Something Went Wrong Please Try Again Later";
+            toast.error("Something Went Wrong", {
+                description: message
+            })
+            return rejectWithValue(null);
+        }
+    }
+);
+
+
+// ─────────────────────────────────────────
+// Reset Password
+// ─────────────────────────────────────────
+
+
+export const resetPasswordThunk = createAsyncThunk(
+    "auth/resetPassword",
+    async (data: { email: string, token: string, newPassword: string }, { rejectWithValue }) => {
+        try {
+            const res = await authService.resetPassword(data.token, data.email, data.newPassword);
+            toast.success("Reset Password Link Sent To Your Mail");
+            return res.data;
+        } catch (error: any) {
+            const message = error?.response?.data?.message || "Something Went Wrong Please Try Again Later";
+            toast.error("Something Went Wrong", {
+                description: message
+            })
+            return rejectWithValue(null);
+        }
+    }
+);
+
+
+
+// ─────────────────────────────────────────
 // Restore Session
 // ─────────────────────────────────────────
 export const restoreSession = createAsyncThunk(
@@ -171,7 +217,7 @@ export const logoutThunk = createAsyncThunk(
             return rejectWithValue(error.response?.data?.message || "Logout failed");
         }
         finally {
-            broadcastLogout(); 
+            broadcastLogout();
         }
     }
 );

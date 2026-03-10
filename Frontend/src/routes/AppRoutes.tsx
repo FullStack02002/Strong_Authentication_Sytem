@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { ROUTES } from "./routePaths";
 import ProtectedRoute from "../components/shared/ProtectedRoute";
-import { Login, Register, Home, VerifyEmail } from "../pages/index.ts"
+import { Login, Register, Home, VerifyEmail, ForgotPassword, ResetPassword } from "../pages/index.ts"
 
 const AppRoutes = () => {
     return (
@@ -25,6 +25,20 @@ const AppRoutes = () => {
                     <VerifyEmail />
                 </ProtectedRoute>
             } />
+
+            <Route path={ROUTES.FORGOT_PASSWORD} element={
+                <ProtectedRoute authentication={false}>
+                    <ForgotPassword />
+                </ProtectedRoute>
+            } />
+
+            <Route path={ROUTES.RESET_PASSWORD} element={
+                <ProtectedRoute authentication={false}>
+                    <ResetPassword />
+                </ProtectedRoute>
+            } />
+
+
 
 
 
