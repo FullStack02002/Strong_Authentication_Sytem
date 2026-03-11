@@ -10,9 +10,13 @@ import {
     registerUser, getAllUsers, getById, deleteUser,
     updateUser, verifyEmail, resendVerification,
     loginUser, verifyLoginOTP, logoutUser, refreshToken,
-    getCurrentUser, resendLoginOTP, forgotPassword, resetPassword
+    getCurrentUser, resendLoginOTP, forgotPassword, resetPassword,
+    googleAuthCallback
 } from "./user.controller.js";
 import { verifyJWT, authorizeRoles } from "../../middlewares/auth.middleware.js";
+import passport from "../../config/passport.js"
+import { env } from "../../config/env.js";
+
 
 
 const router = Router();
@@ -27,6 +31,22 @@ router.post("/login/verify-otp", validateRequest(verifyLoginOTPSchema), verifyLo
 router.post("/refresh-token", refreshToken);
 router.post("/forgot-password", validateRequest(forgotPasswordSchema), forgotPassword);
 router.post("/reset-password", validateRequest(resetPasswordSchema), resetPassword);
+router.get(
+    "/auth/google",
+    passport.authenticate("google", {
+        scope: ["profile", "email"],
+        session: false,
+    })
+);
+router.get(
+    "/auth/google/callback",
+    passport.authenticate("google", {
+        session:         false,
+        failureRedirect: `${env.FRONTEND_URL}/login?error=google_failed`,
+    }),
+    googleAuthCallback
+);
+
 
 
 

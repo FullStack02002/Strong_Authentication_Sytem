@@ -221,3 +221,16 @@ export const logoutThunk = createAsyncThunk(
         }
     }
 );
+
+
+export const getCurrentUserThunk = createAsyncThunk(
+    "auth/getCurrentUser",
+    async () => {
+        try {
+            const res = await authService.getCurrentUser();
+            return res.data.data; 
+        } catch (error: any) {
+            return null;
+        }
+    }
+);

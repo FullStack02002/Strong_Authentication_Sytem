@@ -24,7 +24,8 @@ export interface AuthState {
     logoutLoading: boolean;
     resendOtpLoading: boolean;
     forgotPasswordLoading: boolean;
-    resetPasswordLoading: boolean
+    resetPasswordLoading: boolean;
+
 }
 
 export interface RegisterDTO {

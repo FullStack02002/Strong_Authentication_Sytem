@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { ROUTES } from "./routePaths";
 import ProtectedRoute from "../components/shared/ProtectedRoute";
-import { Login, Register, Home, VerifyEmail, ForgotPassword, ResetPassword } from "../pages/index.ts"
+import { Login, Register, Home, VerifyEmail, ForgotPassword, ResetPassword, GoogleAuthSuccess } from "../pages/index.ts"
 
 const AppRoutes = () => {
     return (
@@ -38,9 +38,7 @@ const AppRoutes = () => {
                 </ProtectedRoute>
             } />
 
-
-
-
+            <Route path={ROUTES.GOOGLE_AUTH_SUCCESS} element={<GoogleAuthSuccess />} />
 
 
             {/* ── Protected Routes ── */}

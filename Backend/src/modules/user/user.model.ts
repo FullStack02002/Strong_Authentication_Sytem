@@ -3,8 +3,6 @@ import type { IUserDocument } from "./user.types.js";
 import bcrypt from "bcrypt"
 import { UserRole } from "./user.types.js";
 
-
-
 const userSchema = new Schema<IUserDocument>(
     {
         name: {
@@ -31,6 +29,19 @@ const userSchema = new Schema<IUserDocument>(
         isVerified: {
             type: Boolean,
             default: false
+        },
+        googleId: {
+            type: String,
+            default: null
+        },
+        authProvider: {
+            type: String,
+            enum: ["local", "google"],
+            default: "local"
+        },
+        avatar: {
+            type: String,
+            default: null
         }
     },
     {
@@ -41,7 +52,7 @@ const userSchema = new Schema<IUserDocument>(
 // funciton to hash password
 
 userSchema.pre("save", async function (this: IUserDocument) {
-    if (!this.isModified("password")) return;
+    if (!this.isModified("password") || !this.password) return;
     this.password = await bcrypt.hash(this.password as string, 10);
 });
 

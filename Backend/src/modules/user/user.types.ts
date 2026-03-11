@@ -1,4 +1,4 @@
-import type { Document } from "mongoose";
+import type { Document, Types } from "mongoose";
 
 export enum UserRole {
     ADMIN = "admin",
@@ -7,11 +7,17 @@ export enum UserRole {
 
 
 export interface IUser {
+    _id: Types.ObjectId;
     name: string;
     email: string;
-    password?: string;
+    password?: string | null;
     role: UserRole;
-    isVerified:boolean;
+    isVerified: boolean;
+
+    googleId?: string | null;
+    authProvider?: "local" | "google" | null;
+
+    avatar?: string | null;
 }
 
 export interface IUserDocument extends IUser, Document {

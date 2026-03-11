@@ -11,8 +11,11 @@ export const env = {
     SMTP_PASS: process.env.SMTP_PASS as string,
     SMTP_PORT: process.env.SMTP_PORT as string,
     SMTP_USER: process.env.SMTP_USER as string,
-    ACCESS_TOKEN_SECRET:process.env.ACCESS_TOKEN_SECRET as string,
-    REFRESH_TOKEN_SECRET:process.env.REFRESH_TOKEN_SECRET as string,
-    ACCESS_TOKEN_EXPIRY:process.env.ACCESS_TOKEN_EXPIRY as string,
-    REFRESH_TOKEN_EXPIRY:process.env.REFRESH_TOKEN_EXPIRY as string
+    ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET as string,
+    REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET as string,
+    ACCESS_TOKEN_EXPIRY: process.env.ACCESS_TOKEN_EXPIRY as string,
+    REFRESH_TOKEN_EXPIRY: process.env.REFRESH_TOKEN_EXPIRY as string,
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID as string,
+    GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,
+    GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL as string
 }

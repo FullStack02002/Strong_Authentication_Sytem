@@ -4,6 +4,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { ROUTES } from "../../routes/routePaths";
 import { loginThunk, verifyLoginOTPThunk, resendLoginOTPThunk } from "../../features/auth/authThunks";
 import { useAppDispatch, useAppSelector } from "../../app/hook";
+import GoogleButton from "../../components/shared/GoogleButton";
+import { useSearchParams } from "react-router-dom";
 
 interface LoginFormData {
     email: string;
@@ -19,6 +21,8 @@ const OTP_COOLDOWN = 60;
 const Login = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams()
+    const googleError = searchParams.get("error");
 
     const loginLoading = useAppSelector((state) => state.auth.loginLoading);
     const otpLoading = useAppSelector((state) => state.auth.loginOtpLoading);
@@ -145,93 +149,117 @@ const Login = () => {
                         STEP 1 — Login
                     ════════════════════ */}
                     {step === "login" && (
-                        <form onSubmit={handleSubmit(onLogin)} className="flex flex-col gap-5">
+                        <div className="flex flex-col gap-5">
+                            {googleError === "google_failed" && (
+                                <div className="bg-red-950/40 border border-red-800/40 rounded-xl px-4 py-3 flex items-center gap-3">
+                                    <span className="text-base">❌</span>
+                                    <div>
+                                        <p className="text-xs text-red-400 font-semibold">
+                                            Google sign in failed
+                                        </p>
+                                        <p className="text-xs text-red-400/70 mt-0.5">
+                                            Please try again or use email and password
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                            <form onSubmit={handleSubmit(onLogin)} className="flex flex-col gap-5">
 
-                            {/* ── Email ── */}
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-sm font-medium text-gray-300 tracking-wide">
-                                    Email Address
-                                </label>
-                                <input
-                                    placeholder="john@example.com"
-                                    className={`w-full px-4 py-3 rounded-xl bg-gray-800/80 border text-white text-sm outline-none transition-all duration-200 placeholder-gray-600
-                                        ${errors.email
-                                            ? "border-red-500/70 focus:border-red-400"
-                                            : "border-gray-700/70 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
-                                        }`}
-                                    {...register("email", {
-                                        required: "Email is required",
-                                        pattern: {
-                                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                            message: "Invalid email format",
-                                        },
-                                        setValueAs: (v) => v.trim().toLowerCase(),
-                                    })}
-                                />
-                                {errors.email && (
-                                    <span className="text-xs text-red-400 flex items-center gap-1">
-                                        <span>⚡</span> {errors.email.message}
-                                    </span>
-                                )}
-                            </div>
-
-                            {/* ── Password ── */}
-
-                            <div className="flex flex-col gap-1.5">
-
-                                <div className="flex items-center justify-between">
+                                {/* ── Email ── */}
+                                <div className="flex flex-col gap-1.5">
                                     <label className="text-sm font-medium text-gray-300 tracking-wide">
-                                        Password
+                                        Email Address
                                     </label>
+                                    <input
+                                        placeholder="john@example.com"
+                                        className={`w-full px-4 py-3 rounded-xl bg-gray-800/80 border text-white text-sm outline-none transition-all duration-200 placeholder-gray-600
+                                        ${errors.email
+                                                ? "border-red-500/70 focus:border-red-400"
+                                                : "border-gray-700/70 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
+                                            }`}
+                                        {...register("email", {
+                                            required: "Email is required",
+                                            pattern: {
+                                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                                message: "Invalid email format",
+                                            },
+                                            setValueAs: (v) => v.trim().toLowerCase(),
+                                        })}
+                                    />
+                                    {errors.email && (
+                                        <span className="text-xs text-red-400 flex items-center gap-1">
+                                            <span>⚡</span> {errors.email.message}
+                                        </span>
+                                    )}
                                 </div>
 
-                                <input
-                                    type="password"
-                                    placeholder="Enter your password"
-                                    className={`w-full px-4 py-3 rounded-xl bg-gray-800/80 border text-white text-sm outline-none transition-all duration-200 placeholder-gray-600
+                                {/* ── Password ── */}
+
+                                <div className="flex flex-col gap-1.5">
+
+                                    <div className="flex items-center justify-between">
+                                        <label className="text-sm font-medium text-gray-300 tracking-wide">
+                                            Password
+                                        </label>
+                                    </div>
+
+                                    <input
+                                        type="password"
+                                        placeholder="Enter your password"
+                                        className={`w-full px-4 py-3 rounded-xl bg-gray-800/80 border text-white text-sm outline-none transition-all duration-200 placeholder-gray-600
             ${errors.password ? "border-red-500/70 focus:border-red-400" : "border-gray-700/70 focus:border-purple-500 focus:ring-1 focus:ring-purple-500/20"
-                                        }`}
-                                    {...register("password", {
-                                        required: "Password is required",
-                                    })}
-                                />
-                                <div className="flex items-center justify-between min-h-[16px]">
-                                    {errors.password ? (
-                                        <span className="text-xs text-red-400 flex items-center gap-1">
-                                            <span>⚡</span> {errors.password.message}
-                                        </span>
-                                    ) : (
-                                        <span />
-                                    )}
-                                    <Link
-                                        to={ROUTES.FORGOT_PASSWORD}
-                                        className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
-                                    >
-                                        Forgot password?
-                                    </Link>
+                                            }`}
+                                        {...register("password", {
+                                            required: "Password is required",
+                                        })}
+                                    />
+                                    <div className="flex items-center justify-between min-h-[16px]">
+                                        {errors.password ? (
+                                            <span className="text-xs text-red-400 flex items-center gap-1">
+                                                <span>⚡</span> {errors.password.message}
+                                            </span>
+                                        ) : (
+                                            <span />
+                                        )}
+                                        <Link
+                                            to={ROUTES.FORGOT_PASSWORD}
+                                            className="text-xs text-purple-400 hover:text-purple-300 transition-colors"
+                                        >
+                                            Forgot password?
+                                        </Link>
+                                    </div>
                                 </div>
+
+                                {/* ── Submit ── */}
+                                <button
+                                    type="submit"
+                                    disabled={loginLoading}
+                                    className={`mt-2 w-full py-3 rounded-xl text-white font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2
+                                    ${loginLoading
+                                            ? "bg-purple-800/50 cursor-not-allowed text-purple-300"
+                                            : "bg-purple-600 hover:bg-purple-500 cursor-pointer shadow-lg shadow-purple-900/30"
+                                        }`}
+                                >
+                                    {loginLoading ? (
+                                        <>
+                                            <div className="w-4 h-4 border-2 border-purple-300 border-t-transparent rounded-full animate-spin" />
+                                            Signing in...
+                                        </>
+                                    ) : (
+                                        "Sign In →"
+                                    )}
+                                </button>
+                            </form>
+
+                            <div className="flex items-center gap-3">
+                                <div className="flex-1 h-px bg-gray-800" />
+                                <span className="text-xs text-gray-500">or</span>
+                                <div className="flex-1 h-px bg-gray-800" />
                             </div>
 
-                            {/* ── Submit ── */}
-                            <button
-                                type="submit"
-                                disabled={loginLoading}
-                                className={`mt-2 w-full py-3 rounded-xl text-white font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2
-                                    ${loginLoading
-                                        ? "bg-purple-800/50 cursor-not-allowed text-purple-300"
-                                        : "bg-purple-600 hover:bg-purple-500 cursor-pointer shadow-lg shadow-purple-900/30"
-                                    }`}
-                            >
-                                {loginLoading ? (
-                                    <>
-                                        <div className="w-4 h-4 border-2 border-purple-300 border-t-transparent rounded-full animate-spin" />
-                                        Signing in...
-                                    </>
-                                ) : (
-                                    "Sign In →"
-                                )}
-                            </button>
-                        </form>
+                            <GoogleButton label="Continue with Google" />
+
+                        </div>
                     )}
 
                     {/* ════════════════════

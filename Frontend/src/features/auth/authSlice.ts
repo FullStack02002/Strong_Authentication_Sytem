@@ -11,7 +11,8 @@ import {
     logoutThunk,
     resendLoginOTPThunk,
     forgotPasswordThunk,
-    resetPasswordThunk
+    resetPasswordThunk,
+    getCurrentUserThunk
 } from "./authThunks";
 
 const initialState: AuthState = {
@@ -30,7 +31,7 @@ const initialState: AuthState = {
     logoutLoading: false,
     resendOtpLoading: false,
     forgotPasswordLoading: false,
-    resetPasswordLoading: false
+    resetPasswordLoading: false,
 };
 
 const authSlice = createSlice({
@@ -154,7 +155,15 @@ const authSlice = createSlice({
             })
             .addCase(logoutThunk.rejected, (state) => {
                 state.logoutLoading = false;
-            })
+            });
+
+        builder
+            .addCase(getCurrentUserThunk.fulfilled, (state, action) => {
+                if (action.payload) {
+                    state.user = action.payload;
+                    state.isAuthenticated = true;
+                }
+            });
     },
 });
 

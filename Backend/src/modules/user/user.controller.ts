@@ -7,6 +7,8 @@ import { toUserResponseDTO } from "./user.dto.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { isValidObjectId } from "mongoose";
 import { verifyRefreshToken } from "../../utils/utils.js";
+import type { IUserDocument } from "./user.types.js";
+import { env } from "../../config/env.js";
 
 
 const cookieOptions = {
@@ -99,6 +101,29 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response) =>
     res.status(200).json(new ApiResponse(200, result, result.message));
 })
 
+export const googleAuthCallback = asyncHandler(
+    async (req: Request, res: Response) => {
+
+        const user = req.user as IUserDocument;
+
+        if (!user) {
+            return res.redirect(`${env.FRONTEND_URL}/login?error=google_failed`);
+        }
+
+        const { accessToken, refreshToken } = await userService.googleAuthService(user);
+
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        res.redirect(
+            `${env.FRONTEND_URL}/auth/google/success?accessToken=${accessToken}`
+        );
+    }
+);
 
 
 

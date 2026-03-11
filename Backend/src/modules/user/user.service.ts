@@ -326,6 +326,28 @@ export const resetPassword = async (
 }
 
 
+export const googleAuthService = async (user: IUserDocument) => {
+    const accessToken = generateAccessToken({
+        _id: user._id.toString(),
+        email: user.email,
+        role: user.role,
+    });
+
+    const refreshToken = generateRefreshToken({
+        _id: user._id.toString(),
+        email: user.email,
+        role: user.role,
+    });
+
+    await redis.set(
+        `refresh:${user._id}`,
+        refreshToken,
+        "EX",
+        7 * 24 * 60 * 60
+    );
+
+    return { accessToken, refreshToken };
+};
 
 
 // Auth Services
