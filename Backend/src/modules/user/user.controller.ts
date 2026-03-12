@@ -65,6 +65,15 @@ export const verifyLoginOTP = asyncHandler(async (req: Request, res: Response) =
 
 
 export const refreshToken = asyncHandler(async (req: Request, res: Response) => {
+
+    const origin = req.headers.origin || req.headers.referer;
+
+    if (origin && !origin.startsWith(env.FRONTEND_URL)) {
+        throw new ApiError(403, "Forbidden");
+    }
+
+
+
     const token = req.cookies?.refreshToken || req.body?.refreshToken;
     if (!token) throw new ApiError(401, "Refresh token missing");
 
