@@ -13,12 +13,14 @@
     "start:dev": "nodemon --exec tsx ./src/server.ts"
   },
   "dependencies": {
+    "@types/helmet": "^0.0.48",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^16.6.1",
     "express": "^5.2.1",
     "express-mongo-sanitize": "^2.2.0",
+    "helmet": "^8.1.0",
     "ioredis": "^5.10.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.2.4",
