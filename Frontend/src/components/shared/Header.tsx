@@ -32,7 +32,6 @@ const Header = () => {
                 <nav className="hidden md:flex items-center gap-8">
                     <a href="#features" className="text-sm text-gray-400 hover:text-white transition-colors">Features</a>
                     <a href="#security" className="text-sm text-gray-400 hover:text-white transition-colors">Security</a>
-                    <a href="#docs"     className="text-sm text-gray-400 hover:text-white transition-colors">Docs</a>
                 </nav>
 
                 {/* ── Auth Buttons ── */}
