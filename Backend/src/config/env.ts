@@ -17,5 +17,7 @@ export const env = {
     REFRESH_TOKEN_EXPIRY: process.env.REFRESH_TOKEN_EXPIRY as string,
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID as string,
     GOOGLE_CLIENT_SECRET: process.env.GOOGLE_CLIENT_SECRET as string,
-    GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL as string
+    GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL as string,
+    RECAPTCHA_SECRET_KEY: process.env.RECAPTCHA_SECRET_KEY as string,
+    RECAPTCHA_MIN_SCORE: Number(process.env.RECAPTCHA_MIN_SCORE) || 0.5,
 }

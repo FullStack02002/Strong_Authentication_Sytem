@@ -6,6 +6,7 @@ import { loginThunk, verifyLoginOTPThunk, resendLoginOTPThunk } from "../../feat
 import { useAppDispatch, useAppSelector } from "../../app/hook";
 import GoogleButton from "../../components/shared/GoogleButton";
 import { useSearchParams } from "react-router-dom";
+import { useRecaptcha } from "../../hooks/useRecaptcha";
 
 interface LoginFormData {
     email: string;
@@ -31,6 +32,9 @@ const Login = () => {
     const [step, setStep] = useState<"login" | "otp">("login");
     const [email, setEmail] = useState("");
     const [countdown, setCountdown] = useState(OTP_COOLDOWN);
+
+    const { getToken } = useRecaptcha();
+
 
     // ── Login Form ──
     const {
@@ -66,9 +70,14 @@ const Login = () => {
 
     // ── Step 1 — Login ──
     const onLogin = async (data: LoginFormData) => {
+        const captchaToken = await getToken("login");
+        if (!captchaToken) return;
+
+
         const result = await (dispatch as any)(loginThunk({
             email: data.email,
             password: data.password,
+            captchaToken,
         }));
 
         if (result.meta.requestStatus === "fulfilled" && result.payload !== null) {
@@ -213,7 +222,7 @@ const Login = () => {
                                             required: "Password is required",
                                         })}
                                     />
-                                    <div className="flex items-center justify-between min-h-[16px]">
+                                    <div className="flex items-center justify-between min-h-4">
                                         {errors.password ? (
                                             <span className="text-xs text-red-400 flex items-center gap-1">
                                                 <span>⚡</span> {errors.password.message}

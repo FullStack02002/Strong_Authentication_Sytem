@@ -132,6 +132,9 @@ export const loginUser = async (data: LoginUserDTO) => {
     if (!user.isVerified) {
         throw new ApiError(403, "Please verify your email before logging in")
     }
+    if (user.authProvider === "google" || !user.password) {
+        throw new ApiError(400, "This account uses Google sign in. Please continue with Google");
+    }
 
     const isPasswordCorrect = await user.comparePassword(password);
     if (!isPasswordCorrect) throw new ApiError(401, "Invalid credentials");

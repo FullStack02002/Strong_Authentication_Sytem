@@ -5,6 +5,9 @@ import { ROUTES } from "../../routes/routePaths";
 import { forgotPasswordThunk } from "../../features/auth/authThunks";
 import { useAppDispatch, useAppSelector } from "../../app/hook";
 import { maskEmail } from "../../utils/maskEmail";
+import { useRecaptcha } from "../../hooks/useRecaptcha";
+
+
 
 
 interface ForgotFormData {
@@ -18,6 +21,9 @@ const ForgotPassword = () => {
     const [submitted, setSubmitted] = useState(false);
     const [email, setEmail] = useState("");
     const [countdown, setCountdown] = useState(60);
+
+    const { getToken } = useRecaptcha();
+
 
 
     // start countdown when submitted becomes true
@@ -44,7 +50,9 @@ const ForgotPassword = () => {
     } = useForm<ForgotFormData>();
 
     const onSubmit = async (data: ForgotFormData) => {
-        const result = await (dispatch as any)(forgotPasswordThunk({ email: data.email }));
+        const captchaToken = await getToken("forgot_password");
+        if (!captchaToken) return;
+        const result = await (dispatch as any)(forgotPasswordThunk({ email: data.email, captchaToken }));
 
         //  always show success UI — don't reveal if email exists
         if (result.meta.requestStatus === "fulfilled") {

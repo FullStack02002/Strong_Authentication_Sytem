@@ -16,20 +16,21 @@ import {
 import { verifyJWT, authorizeRoles } from "../../middlewares/auth.middleware.js";
 import passport from "../../config/passport.js"
 import { env } from "../../config/env.js";
+import { validateCaptcha } from "../../middlewares/captcha.middleware.js";
 
 
 
 const router = Router();
 
 // Auth Routes
-router.post("/register", validateRequest(createUserSchema), registerUser);
+router.post("/register", validateCaptcha("register"), validateRequest(createUserSchema), registerUser);
 router.post("/verify-email", validateRequest(verifyEmailSchema), verifyEmail);
 router.post("/resend-verify", validateRequest(resendVerificationSchema), resendVerification);
 router.post("/resend-otp", validateRequest(resendLoginOTPSchema), resendLoginOTP);
-router.post("/login", validateRequest(loginUserSchema), loginUser);
+router.post("/login", validateCaptcha("login"), validateRequest(loginUserSchema), loginUser);
 router.post("/login/verify-otp", validateRequest(verifyLoginOTPSchema), verifyLoginOTP);
 router.post("/refresh-token", refreshToken);
-router.post("/forgot-password", validateRequest(forgotPasswordSchema), forgotPassword);
+router.post("/forgot-password",validateCaptcha("forgot_password"), validateRequest(forgotPasswordSchema), forgotPassword);
 router.post("/reset-password", validateRequest(resetPasswordSchema), resetPassword);
 router.get(
     "/auth/google",
@@ -41,7 +42,7 @@ router.get(
 router.get(
     "/auth/google/callback",
     passport.authenticate("google", {
-        session:         false,
+        session: false,
         failureRedirect: `${env.FRONTEND_URL}/login?error=google_failed`,
     }),
     googleAuthCallback

@@ -8,7 +8,7 @@ import { broadcastLogout } from "../../utils/authSync";
 // ─────────────────────────────────────────
 export const registerThunk = createAsyncThunk(
     "auth/register",
-    async (data: { name: string; email: string; password: string }, { rejectWithValue }) => {
+    async (data: { name: string; email: string; password: string, captchaToken: string }, { rejectWithValue }) => {
         try {
             const res = await authService.register(data);
             toast.success("Account created!", {
@@ -99,7 +99,7 @@ export const resendLoginOTPThunk = createAsyncThunk(
 // ─────────────────────────────────────────
 export const loginThunk = createAsyncThunk(
     "auth/login",
-    async (data: { email: string; password: string }, { rejectWithValue }) => {
+    async (data: { email: string; password: string, captchaToken: string }, { rejectWithValue }) => {
         try {
             const res = await authService.login(data);
             toast.success("Otp Sent to Your Mail");
@@ -146,7 +146,7 @@ export const verifyLoginOTPThunk = createAsyncThunk(
 
 export const forgotPasswordThunk = createAsyncThunk(
     "auth/forgotPassword",
-    async (data: { email: string }, { rejectWithValue }) => {
+    async (data: { email: string, captchaToken: string }, { rejectWithValue }) => {
         try {
             const res = await authService.forgotPassword(data);
             toast.success("Reset Password Link Sent To Your Mail");
@@ -228,7 +228,7 @@ export const getCurrentUserThunk = createAsyncThunk(
     async () => {
         try {
             const res = await authService.getCurrentUser();
-            return res.data.data; 
+            return res.data.data;
         } catch (error: any) {
             return null;
         }

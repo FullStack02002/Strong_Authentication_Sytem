@@ -4,6 +4,7 @@ import { ROUTES } from "../../routes/routePaths";
 import { registerThunk } from "../../features/auth/authThunks";
 import { useAppDispatch, useAppSelector } from "../../app/hook";
 import GoogleButton from "../../components/shared/GoogleButton";
+import { useRecaptcha } from "../../hooks/useRecaptcha";
 
 
 interface RegisterFormData {
@@ -17,6 +18,8 @@ const Register = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const loading = useAppSelector((state) => state.auth.registerLoading);
+  const { getToken } = useRecaptcha();
+
 
   const {
     register,
@@ -26,11 +29,14 @@ const Register = () => {
   } = useForm<RegisterFormData>();
 
   const onSubmit = async (data: RegisterFormData) => {
+    const captchaToken = await getToken("register");
+    if (!captchaToken) return;
 
     const result = await (dispatch as any)(registerThunk({
       name: data.name,
       email: data.email,
       password: data.password,
+      captchaToken
     }));
 
 

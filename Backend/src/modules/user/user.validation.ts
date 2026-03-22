@@ -25,6 +25,7 @@ export const createUserSchema = z.object({
             .regex(/[a-z]/, "Password must contain at least one lowercase letter")
             .regex(/[0-9]/, "Password must contain at least one number")
             .regex(/[@$!%*?&#^]/, "Password must contain at least one special character (@$!%*?&#^)"),
+        captchaToken: z.string().min(1, "Captcha Token is Required"),
     }).strict(),
 });
 
@@ -106,7 +107,7 @@ export const loginUserSchema = z.object({
         password: z
             .string()
             .min(1, "Password is required"),
-
+        captchaToken: z.string().min(1, "Captcha Token is Required"),
     }).strict(),
     params: z.object({}).passthrough(),
     query: z.object({}).passthrough(),
@@ -140,6 +141,7 @@ export const forgotPasswordSchema = z.object({
             .email("Invalid email format")
             .trim()
             .toLowerCase(),
+        captchaToken: z.string().min(1, "Captcha Token is Required"),
     }).strict(),
 });
 
