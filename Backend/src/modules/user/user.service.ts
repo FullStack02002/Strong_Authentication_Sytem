@@ -377,7 +377,9 @@ export const deleteUser = async (id: string) => {
     if (!user) {
         throw new ApiError(404, "User Not Found");
     }
+
     await invalidateUserCache(id);
+
     return user;
 }
 
